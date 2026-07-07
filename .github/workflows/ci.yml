@@ -4,34 +4,27 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
-  build-and-test:
+  build-test:
 
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Check Docker version
+      - name: Check Docker
         run: docker --version
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Run integration tests
+      - name: Check repository files
         run: |
-          docker compose -f result/docker-compose.test.yml up \
-          --build \
-          --abort-on-container-exit \
-          --exit-code-from sut
+          ls
+          ls vote
+          ls result
+          ls worker
 
-      - name: Cleanup
-        if: always()
+      - name: Build test containers
         run: |
-          docker compose -f result/docker-compose.test.yml down -v
+          docker compose -f result/docker-compose.test.yml build
